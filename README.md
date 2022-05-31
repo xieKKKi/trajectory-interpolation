@@ -27,3 +27,12 @@ python3 interpolation.py --input_path_traj lidar_keyframe_trajectory.txt --input
 其中lidar_keyframe_trajectory.txt修改为你的已有关键帧位姿文件，camera_timestamp.txt修改为你的待插值时间戳文件。
 
 lidar_keyframe_trajectory.txt 采用tum格式存储轨迹，camera_timestamp.txt每一行为一个待插值的时间戳。可查看示例文件。
+
+## 附
+可使用evo来可视化插值效果，参考https://github.com/MichaelGrupp/evo
+```
+pip install evo --upgrade --no-binary evo
+```
+```
+evo_traj tum --ref=lidar_keyframe_trajectory.txt lidar_keyframe_trajectory_interpolation.txt lidar_keyframe_trajectory_interpolation_camera.txt -p
+```
