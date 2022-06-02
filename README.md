@@ -36,5 +36,8 @@ pip install evo --upgrade --no-binary evo
 ```
 evo_traj tum --ref=lidar_keyframe_trajectory.txt lidar_keyframe_trajectory_interpolation.txt lidar_keyframe_trajectory_interpolation_camera.txt -p
 ```
-![image](https://user-images.githubusercontent.com/78134664/171151772-f929af32-71a3-491f-b0f4-2f4bc477cee2.png)
+```
+evo_ape tum lidar_keyframe_trajectory_interpolation.txt lidar_keyframe_trajectory_interpolation_camera.txt -va --plot
+```
+![image](https://user-images.githubusercontent.com/78134664/171545521-aa8338ac-b60b-44cb-9402-031a9a371897.png)
 
