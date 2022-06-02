@@ -14,20 +14,23 @@ lidar_to_cam_rz = -0.04
 r = RR.from_euler('zxy', [lidar_to_cam_rz,  lidar_to_cam_rx,  lidar_to_cam_ry], degrees=False).as_matrix()
 t = np.matrix([lidar_to_cam_tx, lidar_to_cam_ty, lidar_to_cam_tz])
 T = np.hstack([r, t.transpose()]) # 水平拼接
-ET = np.vstack([T, np.array([0, 0, 0, 1])]) # 竖直拼接
+ET_cl = np.vstack([T, np.array([0, 0, 0, 1])]) # 竖直拼接
 print("Extrinsic Matrix:")
-print(ET)
+print(ET_cl)
+
 
 # 根据外参计算相机的位姿
 def poseTransformation(q, trans):
-    rl = RR.from_quat([-q.as_quat()[0], -q.as_quat()[1], -q.as_quat()[2], q.as_quat()[3]]).as_matrix()
-    tl = np.matrix([trans[0], trans[1], trans[2]])
-    Tl = np.vstack([np.hstack([rl, tl.transpose()]), np.array([0, 0, 0, 1])])
-    Tc = np.matmul(ET, Tl)
-    rc = Tc[:3, :3]
-    qc = RR.from_matrix(rc).as_quat()
-    tc = Tc[:3, 3].A
-    return qc, tc
+    r_lw = RR.from_quat([-q.as_quat()[0], -q.as_quat()[1], -q.as_quat()[2], q.as_quat()[3]]).as_matrix()
+    t_lw = np.matrix([trans[0], trans[1], trans[2]])
+    P_l = np.vstack([np.hstack([r_lw, t_lw.transpose()]), np.array([0, 0, 0, 1])])
+    P_c = np.matmul(P_l, ET_cl)
+    # P_c = np.matmul(P_l, np.linalg.inv(ET_cl))
+    r_cw = P_c[:3, :3]
+    q_cw = RR.from_matrix(r_cw).as_quat()
+    t_cw = P_c[:3, 3].A
+    return q_cw, t_cw
+
 
 def main(input_path_traj, input_path_timestamps):
     print("**********************************")
