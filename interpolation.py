@@ -40,7 +40,7 @@ def main(input_path_traj, input_path_timestamps):
     print("**********************************")
     print("processing...")
     lidar_path_name = input_path_traj.split('/')
-    file_name = lidar_path_name[-1].split('.')
+    file_name = lidar_path_name[-1].split('.')[0]
     time1 = time2 = time_inter = 0.0
     time_stamps = []
     q1 = q2 = RR.from_quat([0.0, 0.0, 0.0, 1.0])
@@ -51,8 +51,7 @@ def main(input_path_traj, input_path_timestamps):
             time_stamps.append(float(line))
     
     time_stamps = iter(time_stamps)
-
-    with open(input_path_traj, 'r') as f, open('lidar_interpolation.txt', 'w+') as lidar_file, open('camera_interpolation.txt', 'w+') as camera_file:
+    with open(input_path_traj, 'r') as f, open(file_name + '_interpolation.txt', 'w+') as lidar_file, open(file_name + '_interpolation_camera.txt', 'w+') as camera_file:
         for line in f.readlines():
             tmp_txt = str.split(line.strip())
             
@@ -68,7 +67,7 @@ def main(input_path_traj, input_path_timestamps):
             q2 = RR.from_quat([float(tmp_txt[4]), float(tmp_txt[5]), float(tmp_txt[6]), float(tmp_txt[7])])
             trans2 = np.array([float(tmp_txt[1]), float(tmp_txt[2]), float(tmp_txt[3])])
             
-            while (time1 < time_inter) & (time2 > time_inter):
+            while (time1 <= time_inter) & (time2 >= time_inter):
                 print("\rtime1 = {0}, time2 = {1}, time_inter = {2}".format(time1, time2, time_inter), end='', flush=True)
                 q_inter = interpolate_rotation(time1, q1, time2, q2, time_inter)
                 trans_inter = interpolate_translation(time1, trans1, time2, trans2, time_inter) 
@@ -165,8 +164,8 @@ def arc_sin_x_over_x(x):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--traj", required=True)
-    parser.add_argument("--timestamps", required=True)
+    parser.add_argument("--traj", required=False, default='lidar_trajectory.txt')
+    parser.add_argument("--timestamps", required=False, default='camera_timestamp.txt')
     args = parser.parse_args()
     main(args.traj, args.timestamps)
 
